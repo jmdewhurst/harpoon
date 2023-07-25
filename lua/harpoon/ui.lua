@@ -29,7 +29,13 @@ local function create_window()
     log.trace("_create_window()")
     local config = harpoon.get_menu_config()
     local width = config.width or 60
+    if 0 < width and width < 1 then
+        width = math.floor(width * vim.api.nvim_win_get_width(0))
+    end
     local height = config.height or 10
+    if 0 < height and height < 1 then
+        height = math.floor(height * vim.api.nvim_win_get_height(0))
+    end
     local borderchars = config.borderchars
         or { "─", "│", "─", "│", "╭", "╮", "╯", "╰" }
     local bufnr = vim.api.nvim_create_buf(false, false)
@@ -81,11 +87,11 @@ function M.toggle_quick_menu()
     vim.cmd(
         string.format(
             "autocmd Filetype harpoon "
-                .. "let path = '%s' | call clearmatches() | "
-                -- move the cursor to the line containing the current filename
-                .. "call search('\\V'.path.'\\$') | "
-                -- add a hl group to that line
-                .. "call matchadd('HarpoonCurrentFile', '\\V'.path.'\\$')",
+            .. "let path = '%s' | call clearmatches() | "
+            -- move the cursor to the line containing the current filename
+            .. "call search('\\V'.path.'\\$') | "
+            -- add a hl group to that line
+            .. "call matchadd('HarpoonCurrentFile', '\\V'.path.'\\$')",
             curr_file:gsub("\\", "\\\\")
         )
     )
